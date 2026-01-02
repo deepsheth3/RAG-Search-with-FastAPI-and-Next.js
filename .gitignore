@@ -1,0 +1,29 @@
+# System
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node (Frontend)
+node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+.pnp
+.pnp.js
+
+# Python (Backend)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+backend/venv/
+backend/env/
+.env
+backend/.env
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
