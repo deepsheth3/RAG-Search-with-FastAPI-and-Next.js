@@ -1,29 +1,23 @@
 # System
 .DS_Store
-.AppleDouble
-.LSOverride
+.idea/
+.vscode/
 
-# Node (Frontend)
-node_modules/
+# Backend (Python)
+backend/.venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.pytest_cache/
+backend/coverage.xml
+
+# Frontend (Node)
+frontend/node_modules/
 frontend/.next/
 frontend/out/
 frontend/build/
-.pnp
-.pnp.js
+frontend/.env.local
+frontend/npm-debug.log*
 
-# Python (Backend)
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-backend/.venv/
-backend/venv/
-backend/env/
-.env
-backend/.env
-
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
+# Artifacts
+.gemini/
