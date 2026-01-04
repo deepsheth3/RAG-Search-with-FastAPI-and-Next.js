@@ -10,6 +10,7 @@ backend/*.pyc
 backend/.env
 backend/.pytest_cache/
 backend/coverage.xml
+backend/logs/
 
 # Frontend (Node)
 frontend/node_modules/

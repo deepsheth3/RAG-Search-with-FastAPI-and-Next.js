@@ -1,7 +1,10 @@
+import logging
 from typing import List, Dict
 from openai import OpenAI
 from core.config import get_settings
 from models.ticket import Ticket
+
+logger = logging.getLogger(__name__)
 
 class ChatService:
     def __init__(self):
@@ -9,6 +12,8 @@ class ChatService:
         self.client = OpenAI(api_key=self.settings.OPENAI_API_KEY)
 
     def generate_response(self, messages: List[Dict[str,str]], tickets: List[Ticket]):
+        logger.info(f"Generating chat response with {len(tickets)} context tickets and {len(messages)} messages.")
+        
         if tickets:
             context_line = [
                 f'Ticket {t.id}: Details - {t.title} {t.content}'
@@ -29,9 +34,14 @@ class ChatService:
             *messages
         ]
 
-        response = self.client.chat.completions.create(
-            model = self.settings.OPENAI_MODEL,
-            messages = final_messages
-        )
-        
-        return response.choices[0].message.content
+        try:
+            response = self.client.chat.completions.create(
+                model = self.settings.OPENAI_MODEL,
+                messages = final_messages
+            )
+            content = response.choices[0].message.content
+            logger.info("Chat response generated successfully.")
+            return content
+        except Exception as e:
+            logger.error(f"Error generating chat response: {e}")
+            return "Thinking..."

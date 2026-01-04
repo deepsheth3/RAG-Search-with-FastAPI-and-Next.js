@@ -1,3 +1,4 @@
+import logging
 from typing import List
 import numpy as np
 from models.ticket import Ticket
@@ -5,16 +6,19 @@ from services.embedding_service import EmbeddingService
 from pinecone import Pinecone
 from core.config import get_settings
 
+logger = logging.getLogger(__name__)
+
 class SearchService:
     def __init__(self):
         self.setting = get_settings()
         self.embedding_service = EmbeddingService()
         self.pc = Pinecone(api_key=self.setting.PINECONE_API_KEY)
         self.index = self.pc.Index(self.setting.PINECONE_INDEX_NAME)
+        logger.info("Connected to Pinecone successfully.")
 
     def add_tickets(self, tickets: List[Ticket]):
         batch_size = 50
-        print(f"Ingesting {len(tickets)} tickets in batches of {batch_size}...")
+        logger.info(f"Starting ingestion of {len(tickets)} tickets in batches of {batch_size}...")
 
         for i in range(0, len(tickets), batch_size):
             batch = tickets[i:i+batch_size]
@@ -24,7 +28,7 @@ class SearchService:
             try:
                 embeddings = self.embedding_service.get_batch_embeddings(texts)
             except Exception as e:
-                print(f"Error embedding batch {i}: {e}")
+                logger.error(f"Error embedding batch {i}: {e}")
                 continue
 
             # 2. Upload Batch
@@ -42,10 +46,15 @@ class SearchService:
                     }
                 })
             
-            self.index.upsert(vectors=vectors)
-            print(f"Uploaded batch {i // batch_size + 1}/{(len(tickets) + batch_size - 1) // batch_size}")
+            try:
+                self.index.upsert(vectors=vectors)
+                logger.info(f"Uploaded batch {i // batch_size + 1}/{(len(tickets) + batch_size - 1) // batch_size}")
+            except Exception as e:
+                logger.error(f"Failed to upload batch {i}: {e}")
     
     def search(self, query: str, k: int = 3) -> List[Ticket]:
+        logger.info(f"Searching for: '{query}'")
+        
         query_vector = self.embedding_service.get_embeddings(text=query)
         
         response = self.index.query(
@@ -54,6 +63,8 @@ class SearchService:
             include_metadata=True
         )
         
+        logger.info(f"Found {len(response.matches)} results for '{query}'")
+
         results = []
         for match in response.matches:
             t = Ticket(
