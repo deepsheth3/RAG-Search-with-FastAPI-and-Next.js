@@ -67,6 +67,6 @@ frontend/
 ```
 
 ## Future Improvements
-- [ ] Real-time Chat Interface
-- [ ] index persistence (saving FAISS index to disk)
+- [X] Real-time Chat Interface
+- [X] index persistence (saving FAISS index to disk)
 - [ ] Ingestion connectors for Jira/Confluence
